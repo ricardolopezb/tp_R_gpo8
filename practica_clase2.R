@@ -73,7 +73,6 @@ diabPerc <- round((nrow(diab)/nrow(dataset))*100)
 notDiabPerc <- 100 - diabPerc
 
 pie3D(c(diabPerc,notDiabPerc),main = "Diabetics Distribution", labels = c(paste(diabPerc,"%"),paste(notDiabPerc,"%")),col = c("red","lightgreen"),labelcex = 1, explode = 0.1,start = 2.9 ,theta = 1.1, mar = c(6,6,6,6))
-
 legend(-1.1,1.15,c("Diabetic","Non Diabetic"),fill = c("red","lightgreen"))
 
 #3 -- Women more than 50 years old

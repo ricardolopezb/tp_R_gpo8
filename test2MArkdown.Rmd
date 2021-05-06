@@ -18,7 +18,7 @@ library(ggridges)
 library(dplyr)
 library(hrbrthemes)
 
-dataset <- read.csv("C:/Users/54112/Desktop/TpR/dataset.csv", sep=";")
+dataset <- read.csv("C:\\Users\\Santiago\\Downloads\\dataset.csv", sep=";")
 sexo <- factor(dataset$SEXO)
 a <- table(sexo)
 porcentajeHyM <- prop.table(a)
@@ -52,62 +52,166 @@ pie3D(c(diabPerc,notDiabPerc),main = "Diabetics Distribution",
       theta = 1.1, mar = c(6,6,6,6))
 legend(-1.1,1.15,c("Diabetic","Non Diabetic"),fill = c("red","lightgreen"))
 ```
+Almost one out of three patients is diabetic.
 
-## A New Output Format
+## Women older than 50 y/o Density Distribution
 
-`html_pretty` in the [**prettydoc**](https://github.com/yixuan/prettydoc/)
-package is a new output format for creating HTML documents from R Markdown files.
-`html_pretty` is more lightweight compared to `html_document`, and is more
-stylish than `html_vignette` when creating package vignettes.
+#### Code:
+```{r fig.width=6, fig.height=6, fig.align='center'}
+womenMoreThan50 <- dataset[which(dataset$EDAD > 50 & dataset$SEXO == "FEME"), ] 
+womenMoreThan50 %>% 
+  ggplot(aes(x=EDAD)) + 
+  geom_density(fill = "#b19cd9", color = "#e1ecef", alpha = 0.8) + 
+  ggtitle("Women older than 50 y/o Density")
+```
+In this graph it is possible to visually understand how women are distributed according to their age. 
 
-## New Styles
+## Males and women older than 50 y/o Density Distribution
 
-`html_pretty` currently supports three page themes (`cayman`, `tactile` and
-`architect`), and two syntax highlight styles (`github` and `vignette`).
-The theme and highlight styles can be specified in the document metadata,
-for example:
+#### Code:
+```{r fig.width=6, fig.height=6, fig.align='center'}
+ggplot(dataset, aes(x = EDAD, fill = SEXO)) +
+  geom_density(alpha = 0.4) +
+  theme_ridges() +
+  scale_fill_discrete(name = "Gender", labels = c("Female","Male")) +
+  theme(legend.position = "top")
+```
+In this graph it is possible to visually understand how women and men are distributed according to their age.
 
-```yaml
-output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+## Procedure on diabetics patients
+
+#### Code:
+```{r fig.width=6, fig.height=6, fig.align='center'}
+diab <- dataset[which(dataset$DIABETES == "1"),] #agregarle transparencia al color de las areas
+diab %>% 
+  ggplot(aes(x= EDAD, fill = PROCEDIMIENTO)) +
+  geom_density(alpha = 0.8) +
+  theme_ridges() +
+  scale_fill_discrete(name = "Procedimiento", labels = c("Cirugia","Angioplastia","Endovalvula")) +
+  theme(legend.position = "top")
+  ggtitle("Densidad de diferentes procedimientos en pacientes diabeticos segun la edad")
 ```
 
-## Your Familiar Tools
+## Procedure on diabetic patients
 
-Feel free to use the `knitr` infrastructure with dozens of tunable options in
-your document.
+#### Code:
+```{r fig.width=6, fig.height=6, fig.align='center'}
+diabFiltered <- diab[which(diab$TIPO.DE.CIRUGIA != "#N/A"),]
+diabFiltered %>% 
+  ggplot(aes(x=TIPO.DE.CIRUGIA)) + 
+  geom_bar( ) +
+  scale_fill_brewer() 
+  theme(legend.position="top")
+  ggtitle("Density of different procedures on diabetic^-1 patients")
+```
+
+## Procedures on patients with ejection fraction less than 50
+
+#### Code:
+
+```{r, include = FALSE, results='asis'}
+feyminus50 <- dataset[which(dataset$FEY < 50),]
+xVar<- c("CIRUGIA","ANGIOPLASTIA","ENDOVALVULA")
+procedimientosFEY <- factor(feyminus50$PROCEDIMIENTO)
+table(procedimientosFEY)
+freqTable1 <- as.vector(table(procedimientosFEY))
+freqAngioFEY <- as.numeric(freqTable1[1])
+freqCirugiaFEY <- as.numeric(freqTable1[2])
+freqEndovalvFEY <- as.numeric(freqTable1[3])
+```
 
 ```{r fig.width=6, fig.height=6, fig.align='center'}
-set.seed(123)
-n <- 1000
-x1  <- matrix(rnorm(n), ncol = 2)
-x2  <- matrix(rnorm(n, mean = 3, sd = 1.5), ncol = 2)
-x   <- rbind(x1, x2)
-head(x)
-smoothScatter(x, xlab = "x1", ylab = "x2")
+plot_ly(
+  y = c(freqCirugiaFEY,freqAngioFEY,freqEndovalvFEY),
+  x = xVar,
+  name = "PROCEDIMIENTO DE FEY < 50 ",
+  type = "bar",
+  marker = list(color = c("#83DC4D","#0C9B21","#7BBB84","#9DFBAB"))) %>%
+  layout(title = "Procedimientos de pacientes con fraccion de eyeccion menor a 50")
 ```
 
-You can include code snippets of languages other than R, but note that
-the block header has no curly brackets around the language name.
+## Procedures on patients younger than 50 y/o
 
-```cpp
-// [[Rcpp::export]]
-NumericVector timesTwo(NumericVector x) {
-    return x * 2;
-}
+#### Code:
+
+```{r fig.width=6, fig.height=6, fig.align='center'}
+edadMenorA55 <- dataset[which(dataset$EDAD < 55),]
+procedimientosAge55 <- factor(edadMenorA55$PROCEDIMIENTO)
+freqTable2 <- as.vector(table(procedimientosAge55))
+freqAngio55 <- as.numeric(freqTable2[1])
+freqCirugia55 <- as.numeric(freqTable2[2])
+freqEndovalv55 <- 0
+
+plot_ly(
+  y = c(freqCirugia55,freqAngio55,freqEndovalv55),
+  x = xVar,
+  name = "Procedimientos de pacientes con edad menor a 55",
+  type = "bar",
+  marker = list(color = c("E9ADF9","F9ADBD","F9ADE3","F9C3AD"))) %>%
+  layout(title = "Procedimientos de pacientes con edad menor a 55")
+
 ```
 
-You can also write math expressions, e.g. $Y = X\beta + \epsilon$,
-footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+## Prodecures on patients older than 70 y/o
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(iris, 10))
+#### Code:
+```{r fig.width=6, fig.height=6, fig.align='center'}
+edadMayorA70 <- dataset[which(dataset$EDAD > 70),]
+procedimientos <- factor(edadMayorA70$PROCEDIMIENTO)
+freqTable3 <- as.vector(table(procedimientos))
+freqAngio <- as.numeric(freqTable3[1])
+freqCirugia <- as.numeric(freqTable3[2])
+freqEndovalv <- as.numeric(freqTable3[4])
+
+plot_ly(
+  y = c(freqCirugia,freqAngio,freqEndovalv),
+  x = xVar,
+  name = "Procedimientos de pacientes con edad mayor a 70",
+  type = "bar",
+  marker = list(color = c("E9ADF9","F9ADBD","F9ADE3","F9C3AD"))) %>%
+  layout(title = "Procedimientos de pacientes con edad mayor a 70") 
+
 ```
 
-## Stay Tuned
+## Procedures on patients
 
-Please visit the [development page](https://github.com/yixuan/prettydoc/) of the 
-`prettydoc` package for latest updates and news. Comments, bug reports and
-pull requests are always welcome.
+#### Code:
+```{r fig.width=6, fig.height=6, fig.align='center'}
+datasetFilteredPocedimiento <- dataset[which(dataset$PROCEDIMIENTO != "CIRUGIA, ENDOVALVULA"),]
+datasetFilteredPocedimiento %>% 
+  ggplot(aes(x= EDAD, fill = PROCEDIMIENTO)) +
+  geom_density(alpha = 0.8) +
+  theme_ridges() +
+  scale_fill_discrete(name = "Procedimiento", labels = c("Cirugia","Angioplastia","Endovalvula")) +
+  theme(legend.position = "top")+
+  ggtitle("Densidad de diferentes procedimientos segun la edad")
+  
+
+```
+## Graphs {.tabset .tabset-fade .tabset-pills .unnumbered}
+
+### <50 y/o {- .unnumbered}
+!
+```{r, echo = FALSE, results='asis'}
+plot_ly(
+  y = c(freqCirugia55,freqAngio55,freqEndovalv55),
+  x = xVar,
+  name = "Procedimientos de pacientes con edad menor a 55",
+  type = "bar",
+  marker = list(color = c("E9ADF9","F9ADBD","F9ADE3","F9C3AD"))) %>%
+  layout(title = "Procedimientos de pacientes con edad menor a 55")
+```
+
+### >70 y/o {- .unnumbered}
+!
+```{r, echo = FALSE, results='asis'}
+plot_ly(
+  y = c(freqCirugia,freqAngio,freqEndovalv),
+  x = xVar,
+  name = "Procedimientos de pacientes con edad mayor a 70",
+  type = "bar",
+  marker = list(color = c("E9ADF9","F9ADBD","F9ADE3","F9C3AD"))) %>%
+  layout(title = "Procedimientos de pacientes con edad mayor a 70") 
+```
+
+## {.unnumbered}

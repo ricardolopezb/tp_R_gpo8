@@ -18,7 +18,7 @@ library(ggridges)
 library(dplyr)
 library(hrbrthemes)
 
-dataset <- read.csv("C:\\Users\\Santiago\\Downloads\\dataset.csv", sep=";")
+dataset <- read.csv("C:/Users/54112/Desktop/TpR/dataset.csv", sep=";")
 sexo <- factor(dataset$SEXO)
 a <- table(sexo)
 porcentajeHyM <- prop.table(a)

@@ -1,4 +1,4 @@
-dataset <- read.csv("C:/Users/54112/Desktop/TpR/dataset.csv", sep=";")
+dataset <- read.csv("C:\\Users\\Santiago\\Downloads\\dataset.csv", sep=";")
 
 library(plotrix)
 library(plotly)
@@ -16,6 +16,9 @@ library(hrbrthemes)
 #4 Epoc,swan,dialisis,diabetes,obesidad morbida, hipertension pulmonar, edad, (todos los factores de riesgo) con motivo de ingreso.(mejor con procedimiento)
 #5 swan con circulacion extracorporea
 #6 Tiempo de clampeo con numero de lesiones
+#7 Edad con el procedimiento, tipo de cirugía, tipo de válvula
+#8 Los que van a cirugía son los que tienen complicaciones inmediatas, a que se debe eso?
+#9 
 #descartar 5 y 3, ver si es buena la 6, si aporta info, no pensar tanto en el objetivo a resolver, si no en dar un analisis puro del dataset, poner alguno de la edad con tipo de procedimiento y complicaciones
 
 sexo <- factor(dataset$SEXO)
@@ -174,3 +177,5 @@ datasetFilteredPocedimiento %>%
   ggtitle("Densidad de diferentes procedimientos segun la edad")
   
 
+complicacionesInmediatas <- dataset[which(dataset$COMPLICACIONES.INMEDIATAS >0),]
+complicacionesTardias <- dataset[which(dataset$COMPLICACIONES.TARDIAS>0),]

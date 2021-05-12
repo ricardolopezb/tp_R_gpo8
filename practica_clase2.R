@@ -150,7 +150,6 @@ plot_ly(
   layout(title = "Procedimientos de pacientes con edad menor a 55")
 
 #Procedimientos de pacientes con edad mayor a 70
-
 edadMayorA70 <- dataset[which(dataset$EDAD > 70),]
 procedimientos <- factor(edadMayorA70$PROCEDIMIENTO)
 table(procedimientos)

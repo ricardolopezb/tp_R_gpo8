@@ -1,4 +1,4 @@
-dataset <- read.csv("C:\\Users\\Santiago\\Downloads\\dataset.csv", sep=";")
+dataset <- read.csv("dataset.csv", sep=";")
 
 library(plotrix)
 library(plotly)

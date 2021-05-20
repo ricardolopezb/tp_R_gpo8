@@ -38,6 +38,35 @@ pie(tablaAtc, RegionLabels, col = rainbow(length(table(tablaAtc))),main = "Compl
 legendLabels = c("Sin Complicaciones","Complicaciones")
 legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaAtc))))
 
+pacientesCRM <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA"),]
+
+totalDeCirugia = nrow(pacientesCRM)
+
+cantCompCRM <- nrow(pacientesCRM[which(pacientesCRM$COMPLICACIONES.INMEDIATAS == 1 | pacientesCRM$COMPLICACIONES.TARDIAS == 1),])
+
+cantCompCRM_I <- nrow(pacientesCRM[which(pacientesCRM$COMPLICACIONES.INMEDIATAS == 1 & pacientesCRM$COMPLICACIONES.TARDIAS == 0 ),])
+cantCompCRM_T <- nrow(pacientesCRM[which(pacientesCRM$COMPLICACIONES.INMEDIATAS == 0 & pacientesCRM$COMPLICACIONES.TARDIAS == 1),])
+cantCompCRM_IyT<- nrow(pacientesCRM[which(pacientesCRM$COMPLICACIONES.INMEDIATAS == 1 & pacientesCRM$COMPLICACIONES.TARDIAS == 1),])
+
+cantidadTotal = cantCompCRM_I + cantCompCRM_IyT + cantCompCRM_T
+porComplicaciones = cantidadTotal/totalDeCirugia;
+sinComplicaciones = totalDeCirugia - cantidadTotal
+
+tablaCRM = cbind(c(cantidadTotal),c(sinComplicaciones))
+tablaCRM
+prop.table(tablaCRM)
+A <- matrix(nrow=1,ncol=2, c(cantidadTotal,sinComplicaciones), byrow=TRUE)
+
+porcNoCompCrm <- paste(round((as.numeric(A[1,2]/161)*100)), "%", sep="")
+porcCompCrm <- paste(round((as.numeric(A[1,1]/161)*100)), "%", sep="")
+
+
+
+RegionLabels<-c(porcCompCrm,porcNoCompCrm)
+pie(tablaCRM, RegionLabels, col = rainbow(length(table(tablaCRM))),main = "Complicaciones en pacientes de Cirugía")
+legendLabels = c("Complicaciones","Sin Complicaciones")
+legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaCRM))))
+
 # Falta el resto de los procedimientos
 
 
@@ -87,7 +116,7 @@ percentage2
 
 subdatasetCirugia %>% 
   ggplot(aes(y=TIPO.DE.CIRUGIA), position=position_dodge()) + 
-  geom_bar( width = 0.85, color = "darkblue", fill = "blue") +
+  geom_bar( width = 0.85, color = "darkblue", fill = "lightblue") +
   scale_fill_brewer() +
   theme(legend.position="top")+
   ylab("Tipo de Cirugia") 

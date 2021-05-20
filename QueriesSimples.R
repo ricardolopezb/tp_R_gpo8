@@ -66,3 +66,35 @@ plot <-ggplot(counts, aes(fill=counts$ageInterval, y=counts$Freq, x=counts$Motiv
   geom_bar(position="stack", stat="identity")
 
 plot
+
+
+# 4) Distribucion de los diferentes tipos de cirugias
+  
+subdatasetCirugia <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA" & dataset$TIPO.DE.CIRUGIA != "#N/A"),]
+tiposDeCirugias<- factor(subdatasetCirugia$TIPO.DE.CIRUGIA)
+tablaTiposDeCirugias <- table(tiposDeCirugias)
+tablaTiposDeCirugias
+tiposDeCirugias
+
+subdatasetCRM = dataset[which(dataset$CRM == "true"),]
+numCRM = as.numeric(nrow(subdatasetCRM))
+numCRMPura = as.numeric(length(factor(which(subdatasetCRM$TIPO.DE.CIRUGIA == "CRM PURA"))))
+percentage<- paste(round((numCRMPura/numCRM)*100), "%", sep="") #Porcentaje de CRMS que son CRM puras
+percentage
+numCirugia = as.numeric(nrow(subdatasetCirugia))
+percentage2<- paste(round((numCRM/numCirugia)*100), "%", sep="") #Porcentaje de Cirugias que son CRM
+percentage2
+
+subdatasetCirugia %>% 
+  ggplot(aes(y=TIPO.DE.CIRUGIA), position=position_dodge()) + 
+  geom_bar( width = 0.85, color = "darkblue", fill = "blue") +
+  scale_fill_brewer() +
+  theme(legend.position="top")+
+  ylab("Tipo de Cirugia") 
+
+
+
+
+# 5) Distribucion de edad y sexo en el dataset
+
+  # Grafico de piramide poblacional

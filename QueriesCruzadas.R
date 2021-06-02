@@ -29,6 +29,26 @@ abline(modeltas)
   
   #Grafico de barras comparativo, grouped bar chart, entre los que tienen y no ACC en cada numero de lesiones (1-5) 
 
+
+subsetNoACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 0 & dataset$NUMERO.DE.LESIONES != "#N/A"),]
+frecNumLesionesNoACC <- c(as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 0)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 1)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 2)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 3)))),  as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 4)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 5))))) 
+
+subsetACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 1 & dataset$NUMERO.DE.LESIONES != "#N/A"),]
+frecNumLesionesACC <- c(as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 0)))), as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 1)))), as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 2)))), as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 3)))),  as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 4)))), as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 5))))) 
+
+
+cols1<- c("0 Injuries", "1 Injury", "2 Injuries", "3 Injuries", "4 Injuries", "5 Injuries")
+rows1<- c("ACC", "No ACC")
+
+procedACC_data <- data.frame(frecNumLesionesNoACC,frecNumLesionesACC, row.names = cols1)
+
+colnames(procedRisksData)[1]<-"ACC"
+colnames(procedRisksData)[2]<-"No ACC"
+
+barplot(t(as.matrix(procedACC_data)),beside=TRUE,main="Injuries according to ACC",xlab="Injuries", ylab="Frequency", col=c("lightblue", "red"),
+        legend.text = colnames(procedRisksData),args.legend=list(cex=0.75,x = "top"))
+
+
 # 3) Distriubucion de procedimientos en funcion de los vasos afectados
 
 subdatasetVasosAfectados = dataset[which(dataset$Resumen.Coronariopatia !="#N/A" & dataset$Resumen.Coronariopatia !="TCI solo"),]

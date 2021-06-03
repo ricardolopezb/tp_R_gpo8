@@ -1,15 +1,19 @@
 ---
-title: "Our Second R-Markdown"
-author: "Grupo 8"
+title: "Study of Cardiological Patients: Preconditions and Procedures"
+author: "Group 8"
 date: "`r Sys.Date()`"
 output:
   prettydoc::html_pretty:
     theme: hpstr
     highlight: github
 ---
-# First analysis and graphs test from the dataset
+# Introduction
+... 
 
-## Sex Distribution 
+# Data Analysis
+In this section we evaluate different variables in the dataset and show graphs.
+
+## Sex and Age 
 ```{r, include = FALSE, results='asis'}
 library(plotrix)
 library(plotly)
@@ -58,9 +62,9 @@ pyramid <- ggplot(counts, aes(x = counts$ageInterval, y = counts$Freq, fill = co
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE}
 pyramid
 ```
-Explanation: iwi owo uwu
+In this graph we can observe the sex distribution by age. There is a much higher percentage of men in the dataset and the higher concentration is between 60 and 70 years old.
 
-## Arrival Motive
+## Reason for admission
 
 ```{r, include = FALSE, results='asis'}
 displayIngresoSegunEdad<- table(dataset$MOTIVO.DE.INGRESO,dataset$EDAD)
@@ -89,9 +93,9 @@ plotProcedimiento <-ggplot(counts, aes(fill=counts$ageInterval, y=counts$Freq, x
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 plotProcedimiento
 ```
-Explanation: Corregir gráfico
+---explanation (we left the most important procedures)---
 
-## Proceidure distribution
+## Procedures
 
 ```{r, include = FALSE, results='asis'}
 datasetSinNA = dataset[which(dataset$PROCEDIMIENTO != "CIRUGIA, ENDOVALVULA"),]
@@ -107,9 +111,9 @@ ggtitle("")
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 distributionPlot
 ```
-Explanation: iwi owo uwu
+---explanation---
 
-## Surgery distribution
+## Types of Surgery
 
 ```{r, include = FALSE, results='asis'}
 subdatasetCirugia <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA" & dataset$TIPO.DE.CIRUGIA != "#N/A"),]
@@ -133,11 +137,12 @@ subdatasetCirugia %>%
   geom_bar( width = 0.85, color = "darkblue", fill = "lightblue") +
   scale_fill_brewer() +
   theme(legend.position="top")+
-  ylab("Tipo de Cirugia") 
+  ylab("Tipo de Cirugia") +
+  xlab("Frecuency")
 ```
-Explanation: Corregir label
+---explanation---
 
-## Complication percentage
+## Complications
 
 ```{r, include = FALSE, result = 'asis'}
 pacientesATC <- dataset[which(dataset$PROCEDIMIENTO == "ANGIOPLASTIA"),]
@@ -173,22 +178,22 @@ porcCompCrm <- paste(round((as.numeric(A[1,1]/161)*100)), "%", sep="")
 ### Angioplasty
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 RegionLabels<-c(porcentageNoCompAng,porcentageCompAng)
-pie(tablaAtc, RegionLabels, col = rainbow(length(table(tablaAtc))),main = "Complicaciones en pacientes de Angioplastia")
-legendLabels = c("Sin Complicaciones","Complicaciones")
+pie(tablaAtc, RegionLabels, col = rainbow(length(table(tablaAtc))),main = "Complications in angioplasty patients")
+legendLabels = c("No Complications","Complications")
 legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaAtc))))
 ```
-Explanation: Corregir label y colores
+---explanation---
 
 ### Surgery
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 RegionLabels<-c(porcCompCrm,porcNoCompCrm)
-pie(tablaCRM, RegionLabels, col = rainbow(length(table(tablaCRM))),main = "Complicaciones en pacientes de Cirugía")
-legendLabels = c("Complicaciones","Sin Complicaciones")
+pie(tablaCRM, RegionLabels, col = rainbow(length(table(tablaCRM))),main = "Complications in surgery patients")
+legendLabels = c("Complicationss","No Complications")
 legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaCRM))))
 ```
-Explanation: Corregir labely colores
+---explanation and comparison between graphs----
 
-## Number of injuries according to ACC
+## Number of injuries according to ACC (complex coronary anatomy)
 ```{r, include = FALSE, result = 'asis'}
 subsetNoACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 0 & dataset$NUMERO.DE.LESIONES != "#N/A"),]
 frecNumLesionesNoACC <- c(as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 0)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 1)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 2)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 3)))),  as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 4)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 5))))) 
@@ -209,9 +214,9 @@ colnames(procedACC_data)[2]<-"No ACC"
 barplot(t(as.matrix(procedACC_data)),beside=TRUE,main="Injuries according to ACC",xlab="Injuries", ylab="Frequency", col=c("lightblue", "red"),
         legend.text = colnames(procedACC_data),args.legend=list(cex=0.75,x = "top"))
 ```
-Explanation: Tocar colores iwi owo uwu
+---explanation---
 
-## Proceidure Distribution According the vasos afectados
+## Procedure according affected vessels
 
 ```{r, include = FALSE, result = 'asis'}
 subdatasetVasosAfectados = dataset[which(dataset$Resumen.Coronariopatia !="#N/A" & dataset$Resumen.Coronariopatia !="TCI solo"),]
@@ -224,8 +229,8 @@ unVaso<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronari
 dosVasos<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "2 vasos"),]
 tresVasos<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "3 vasos"),]
 
-coronopatia<- c(c("Un vaso", "Un vaso"),c("Dos vasos", "Dos vasos"), c("Tres vasos", "Tres vasos"))
-procedimiento<- c("Cirugia", "Angioplastia","Cirugia", "Angioplastia","Cirugia", "Angioplastia")
+coronopatia<- c(c("One vessel", "One vessel"),c("Two vessels", "Two vessels"), c("Three vessels", "Three vessels"))
+procedimiento<- c("Surgery", "Angioplasty","Surgery", "Angioplasty","Surgery", "Angioplasty")
 valores<- c(nrow(unVaso[which(unVaso$PROCEDIMIENTO == "CIRUGIA"),]),nrow(unVaso[which(unVaso$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]))
 dataVasosProced <- data.frame(procedimiento,coronopatia,valores)
 ```
@@ -233,15 +238,15 @@ dataVasosProced <- data.frame(procedimiento,coronopatia,valores)
 ggplot(dataVasosProced, aes(fill=procedimiento, y=valores ,x=procedimiento)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_viridis(discrete = T, option = "E") +
-  ggtitle("Procedimiento segun numero de vasos") +
+  ggtitle("Procedure according affected vessels") +
   facet_wrap(~coronopatia,nrow = 1) +
   theme_ipsum() +
   theme(legend.position="none") +
   xlab("")
 ```
-Explanation: Corregir labely colores
+---explanation----
 
-## Relatin between TAD, TAS and clampeou time
+## Relation between TAD, TAS (Arterial Tension) and clamping time
 ```{r, include = FALSE, result = 'asis'}
 subdatasetNoAngioplastia = dataset[which(dataset$PROCEDIMIENTO != "ANGIOPLASTIA"),]
 subdatasetTiempoClampeo = subdatasetNoAngioplastia[which(subdatasetNoAngioplastia$TIEMPO.DE.CLAMPEO != "#N/A"),]
@@ -254,23 +259,22 @@ tiempoDeClampeoTas = subdatasetTiempoClampeoTAS$TIEMPO.DE.CLAMPEO
 tad = subdatasetTiempoClampeoTAD$TAD.INGRESO.RCV[which(subdatasetTiempoClampeoTAD$TAD.INGRESO.RCV != "#N/A")]
 tas = subdatasetTiempoClampeoTAS$TAS.INGRESO.RCV[which(subdatasetTiempoClampeoTAS$TAS.INGRESO.RCV != "#N/A")]
 ```
-### TAD and clampeou time
+### TAD and clamping time
 
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 plot(tad,tiempoDeClampeoTad)
 modeltad = lm(tiempoDeClampeoTad~tad)
 abline(modeltad)
 ```
-Explanation: mejorar 100% este gráfico
 
-### TAS and clampeou time
+### TAS and clamping time
 
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 plot(tas,tiempoDeClampeoTas)
 modeltas = lm(tiempoDeClampeoTas~tas)
 abline(modeltas)
 ```
-Explanation: mejorar 100% este gráfico
+evaluar si sacar estos graficos o cambiarlos para poner algo que aporte mas info. Esto esta mal :)
 
 ## Procedure Frequency by Risk Factor
 
@@ -292,6 +296,6 @@ procedRisksData
 barplot(t(as.matrix(procedRisksData)),beside=TRUE,main="Procedure Frequency by Risk Factor",xlab="Risk Factors", ylab="Frequency", col=c("lightblue", "red"),
         legend.text = colnames(procedRisksData),args.legend=list(cex=0.75,x = "top"))
 ```
-Explanation: Tocar colores
+----Explanation----
 
 ## {.unnumbered}

@@ -71,27 +71,34 @@ displayIngresoSegunEdad<- table(dataset$MOTIVO.DE.INGRESO,dataset$EDAD)
 motivoIngreso<- factor(dataset$MOTIVO.DE.INGRESO)
 motivoIngreso
 
+yes <- dataset[which(dataset$MOTIVO.DE.INGRESO == "PROG CORONARIO" | dataset$MOTIVO.DE.INGRESO == "PROG VALV" | dataset$MOTIVO.DE.INGRESO == "PROGRAMADO TAVI" | dataset$MOTIVO.DE.INGRESO == "SCA no SST" | dataset$MOTIVO.DE.INGRESO == "OTRA"),]
+yes
+x <- cut2(yes$EDAD, seq(10,90,15))
 
-x <- cut2(dataset$EDAD, seq(10,90,15))
 
-yes <- dataset$MOTIVO.DE.INGRESO
-displayIngresoSegunEdad<- table(dataset$MOTIVO.DE.INGRESO,dataset$EDAD)
+displayIngresoSegunEdad<- table(yes$MOTIVO.DE.INGRESO,yes$EDAD)
 displayIngresoSegunEdad
 textIntervals <- as.character(x)
-as.data.frame(table(x))
+f <- as.data.frame(table(x))
 
 df <- data.frame(textIntervals, yes)
 
-counts <- ddply(df, .(df$textIntervals, df$yes), nrow)
+counts <- ddply(df, .(df$textIntervals, df$MOTIVO.DE.INGRESO), nrow)
 names(counts) <- c("ageInterval", "Motivo", "Freq")
 counts
 
-plotProcedimiento <-ggplot(counts, aes(fill=counts$ageInterval, y=counts$Freq, x=counts$Motivo)) + 
-  geom_bar(position="stack", stat="identity")
+plot <-ggplot(counts, aes(fill=counts$ageInterval, y=counts$Freq, x=counts$Motivo)) + 
+  geom_bar(position="stack", stat="identity")+
+  ggtitle("Reason for Admission according to Age") +
+  xlab("Reason for Admission") + ylab("Frequency")+
+  labs(fill = "Age Intervals")+
+  scale_x_discrete(labels = c('OTHER','PROG. CORONARY','PROG. VALVE','PROG. TAVI', 'SCA no SST'))
+
+plot
 
 ```
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-plotProcedimiento
+plot
 ```
 ---explanation (we left the most important procedures)---
 

@@ -11,14 +11,22 @@ library(plyr)
 # 1) Procedimientos en pacientes segun la edad
 
 datasetSinNA = dataset[which(dataset$PROCEDIMIENTO != "CIRUGIA, ENDOVALVULA"),]
-
+groupColors <- c("#00ff00", "#ff0000", "#0000ff")
 datasetSinNA %>%
   ggplot(aes(x= EDAD, fill = PROCEDIMIENTO)) +
-  geom_density(alpha = 0.8) +
+  geom_density(alpha = 0.5, fillcolor="#00ff00") +
   theme_ridges() +
-  scale_fill_discrete(name = "Procedimiento", labels = c("Cirugia","Angioplastia","Endovalvula")) +
-  theme(legend.position = "top")
-ggtitle("Densidad de diferentes procedimientos en pacientes segun la edad")
+  scale_fill_discrete(name = "Procedure:", labels = c("Surgery","Angioplasty","Mitral Valve Rep.")) +
+  theme(legend.position = "top")+
+  labs(title="Density of different procedures according to Age",x="Age", y = "Density")
+ggtitle("")
+
+#Cambie la opacidad
+#Cambie las labels
+
+
+
+
 
 
 # 2) Porcentaje de personas con complicaciones
@@ -83,7 +91,7 @@ yes <- dataset$MOTIVO.DE.INGRESO
 displayIngresoSegunEdad<- table(dataset$MOTIVO.DE.INGRESO,dataset$EDAD)
 displayIngresoSegunEdad
 textIntervals <- as.character(x)
-as.data.frame(table(x))
+f <- as.data.frame(table(x))
 
 df <- data.frame(textIntervals, yes)
 
@@ -125,5 +133,34 @@ subdatasetCirugia %>%
 
 
 # 5) Distribucion de edad y sexo en el dataset
+x <- cut2(dataset$EDAD, seq(10,90,5))
 
-  # Grafico de piramide poblacional
+yes <- dataset$SEXO
+displayIngresoSegunEdad<- table(dataset$SEXO,dataset$EDAD)
+displayIngresoSegunEdad
+textIntervals <- as.character(x)
+f <- as.data.frame(table(x))
+
+df <- data.frame(textIntervals, yes)
+
+counts <- ddply(df, .(df$textIntervals, df$yes), nrow)
+names(counts) <- c("ageInterval", "Sexo", "Freq")
+counts
+
+## pyramid charts are two barcharts with axes flipped
+
+counts$Freq <- ifelse(counts$Sexo == "MASC", -1*counts$Freq, counts$Freq)
+
+pyramid <- ggplot(counts, aes(x = counts$ageInterval, y = counts$Freq, fill = counts$Sexo)) + 
+  geom_bar(data = subset(counts, counts$Sexo == "Female"), stat = "identity") +
+  geom_bar(data = subset(counts, counts$Sexo == "Male"), stat = "identity") +
+  scale_y_continuous(breaks = seq(-60, 60, 10), 
+                     labels = paste0(as.character(c(seq(60, 0, -10), seq(10, 60, 10))),'')) + 
+  coord_flip() + 
+  ggtitle("Age distribution by sex") +
+  xlab("Age") + ylab("Number Of Patients")+
+  scale_fill_discrete(name = "Sex", labels = c("Female", "Male"))+
+  theme_bw()
+
+pyramid
+

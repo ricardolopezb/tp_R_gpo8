@@ -202,23 +202,40 @@ legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaCRM
 
 ## Number of injuries according to ACC (complex coronary anatomy)
 ```{r, include = FALSE, result = 'asis'}
-subsetNoACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 0 & dataset$NUMERO.DE.LESIONES != "#N/A"),]
-frecNumLesionesNoACC <- c(as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 0)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 1)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 2)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 3)))),  as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 4)))), as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 5))))) 
+subsetNoACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 0 & 
+                               dataset$NUMERO.DE.LESIONES != "#N/A"),]
+frecNumLesionesNoACC <- c(as.numeric(length(factor(
+  which(subsetNoACC$NUMERO.DE.LESIONES == 0)))), 
+  as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 1)))), 
+  as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 2)))), 
+  as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 3)))),  
+  as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 4)))), 
+  as.numeric(length(factor(which(subsetNoACC$NUMERO.DE.LESIONES == 5))))) 
 
-subsetACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 1 & dataset$NUMERO.DE.LESIONES != "#N/A"),]
-frecNumLesionesACC <- c(as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 0)))), as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 1)))), as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 2)))), as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 3)))),  as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 4)))), as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 5))))) 
+subsetACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 1 & 
+                             dataset$NUMERO.DE.LESIONES != "#N/A"),]
+
+frecNumLesionesACC <- c(as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 0)))), 
+                        as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 1)))), 
+                        as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 2)))), 
+                        as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 3)))),  
+                        as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 4)))), 
+                        as.numeric(length(factor(which(subsetACC$NUMERO.DE.LESIONES == 5))))) 
 
 
 cols1<- c("0 Injuries", "1 Injury", "2 Injuries", "3 Injuries", "4 Injuries", "5 Injuries")
 rows1<- c("ACC", "No ACC")
 
-procedACC_data <- data.frame(frecNumLesionesNoACC,frecNumLesionesACC, row.names = cols1)
+procedACC_data <- data.frame(frecNumLesionesACC,frecNumLesionesNoACC, row.names = cols1)
 
 colnames(procedACC_data)[1]<-"ACC"
 colnames(procedACC_data)[2]<-"No ACC"
+
+
+
 ```
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-barplot(t(as.matrix(procedACC_data)),beside=TRUE,main="Injuries according to ACC",xlab="Injuries", ylab="Frequency", col=c("lightblue", "red"),
+barplot(t(as.matrix(procedACC_data)),beside=TRUE,main="Injuries according to ACC",xlab="Injuries", ylab="Frequency", col=c("red", "lightblue"),
         legend.text = colnames(procedACC_data),args.legend=list(cex=0.75,x = "top"))
 ```
 ---explanation---

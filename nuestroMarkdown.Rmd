@@ -2,12 +2,17 @@
 title: "Study of Cardiological Patients: Preconditions and Procedures"
 author: "Group 8"
 date: "`r Sys.Date()`"
-output:
-  prettydoc::html_pretty:
-    theme: hpstr
-    highlight: github
+output: rmdformats::material
 ---
 # Introduction
+
+This report aims to, through medical data analysis, give an understanding of the dataset that was given to the team, and to use and train a ML model in order to predict what complications patients may present after different medical procedures as accurately as possible.
+
+The dataset used in this assignment was given by Austral University Hospital's cardiology department, located in Pilar, Buenos Aires.
+
+This document is organized into three sections: Data Analysis, which shows generalized queries on the dataset; Interpretation, which seeks to give further understanding of the given dataset in its context, and Predictor, where the engineering behind the model is explained.
+
+To analyze the dataset in the correct way and extract the richest information we started with researching the variables meaning, medical terms included, and cardiological procedures from different information sources. We then proceeded with the implementation of data analysis tools and strategies to fulfill our objectives.
 ... 
 
 # Data Analysis
@@ -27,6 +32,7 @@ library(reshape2)
 library(plyr)
 library(ggplot2)
 library(viridis)
+library(rmdformats)
 
 dataset <- read.csv("dataset.csv", sep=";")
 x <- cut2(dataset$EDAD, seq(10,90,5))
@@ -54,7 +60,7 @@ pyramid <- ggplot(counts, aes(x = counts$ageInterval, y = counts$Freq, fill = co
   coord_flip() + 
   ggtitle("Age distribution by sex") +
   xlab("Age") + ylab("Number Of Patients")+
-  scale_fill_discrete(name = "Sex", labels = c("Female", "Male"))+
+  scale_fill_manual(name = "Sex", labels = c("Female", "Male"),values = c("#f08080","#4ea9ca"))+
   theme_bw()
 
 ```
@@ -62,6 +68,7 @@ pyramid <- ggplot(counts, aes(x = counts$ageInterval, y = counts$Freq, fill = co
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE}
 pyramid
 ```
+
 In this graph we can observe the sex distribution by age. There is a much higher percentage of men in the dataset and the higher concentration is between 60 and 70 years old.
 
 ## Reason for admission
@@ -71,7 +78,7 @@ displayIngresoSegunEdad<- table(dataset$MOTIVO.DE.INGRESO,dataset$EDAD)
 motivoIngreso<- factor(dataset$MOTIVO.DE.INGRESO)
 motivoIngreso
 
-yes <- dataset[which(dataset$MOTIVO.DE.INGRESO == "PROG CORONARIO" | dataset$MOTIVO.DE.INGRESO == "PROG VALV" | dataset$MOTIVO.DE.INGRESO == "PROGRAMADO TAVI" | dataset$MOTIVO.DE.INGRESO == "SCA no SST" | dataset$MOTIVO.DE.INGRESO == "OTRA"),]
+yes <- dataset[which(dataset$MOTIVO.DE.INGRESO == "PROG CORONARIO" | dataset$MOTIVO.DE.INGRESO == "PROG VALV" | dataset$MOTIVO.DE.INGRESO == "SCA no SST"),]
 yes
 x <- cut2(yes$EDAD, seq(10,90,15))
 
@@ -89,41 +96,43 @@ counts
 
 plot <-ggplot(counts, aes(fill=counts$ageInterval, y=counts$Freq, x=counts$Motivo)) + 
   geom_bar(position="stack", stat="identity")+
+  scale_fill_manual(labels = c('[10;25)','[25;40)','[40;55)','[55;70)','[70;85)','[85;92)'),values = c("#4169E1","#015d67","#36a792","#63bd99","#87CEEB","#B0E0E6"))+
   ggtitle("Reason for Admission according to Age") +
   xlab("Reason for Admission") + ylab("Frequency")+
-  labs(fill = "Age Intervals")+
-  scale_x_discrete(labels = c('OTHER','PROG. CORONARY','PROG. VALVE','PROG. TAVI', 'SCA no SST'))
+  labs(fill = "Age Intervals")
 
 plot
 
 ```
-```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
+```{r fig.width=8, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 plot
 ```
----explanation (we left the most important procedures)---
+
+The aim of this graph is to show the main causes of admission in the Hospital, according to the age of the patients. It is possible to easily see that Coronary Programmed Operations stands out as the most common reason.
 
 ## Procedures
 
 ```{r, include = FALSE, results='asis'}
 datasetSinNA = dataset[which(dataset$PROCEDIMIENTO != "CIRUGIA, ENDOVALVULA"),]
 distributionPlot<-datasetSinNA %>%
-  ggplot(aes(x= EDAD, fill = PROCEDIMIENTO)) +
+  ggplot(aes(x= EDAD, fill = PROCEDIMIENTO,..count..*10)) +
   geom_density(alpha = 0.5) +
   theme_ridges() +
-  scale_fill_manual(name = "Procedure:", labels = c("Surgery","Angioplasty","Mitral Valve Rep."), values = c("#10217d","#16c2d5","#3CB371")) +
+  scale_fill_manual(name = "Procedure:", labels = c("Surgery","Angioplasty","Mitral Valve Rep."), values = c("#10217d","#16c2d5","#3CB371"),) +
   theme(legend.position = "top")+
-  labs(title="Density of different procedures according to Age",x="Age", y = "Density")
+  labs(title="Density of different procedures according to Age",x="Age", y = "Density")+
 ggtitle("")
 ```
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 distributionPlot
 ```
----explanation---
+
+This graph shows how procedures are distributed according to the age of the patient. Mitral Valve Replacement far outweighs as the most recurrent procedure in the oldest ages.
 
 ## Types of Surgery
 
 ```{r, include = FALSE, results='asis'}
-subdatasetCirugia <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA" & dataset$TIPO.DE.CIRUGIA != "#N/A"),]
+subdatasetCirugia <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA" & (dataset$TIPO.DE.CIRUGIA != "#N/A" & dataset$TIPO.DE.CIRUGIA != "TUMORES DE AURICULA" & dataset$TIPO.DE.CIRUGIA != "TROMBECTOMIA PULMONAR" & dataset$TIPO.DE.CIRUGIA != "PLASTICA TRICUS, OTRA" & dataset$TIPO.DE.CIRUGIA != "PERICARDIECTOMIA" & dataset$TIPO.DE.CIRUGIA != "DOBLE REEMPLAZO VALVULAR")),]
 tiposDeCirugias<- factor(subdatasetCirugia$TIPO.DE.CIRUGIA)
 tablaTiposDeCirugias <- table(tiposDeCirugias)
 tablaTiposDeCirugias
@@ -144,11 +153,12 @@ subdatasetCirugia %>%
   geom_bar( width = 0.85, color = "darkblue", fill = "lightblue") +
   scale_fill_brewer() +
   theme(legend.position="top")+
-  ylab("Tipo de Cirugia") +
-  xlab("Frecuency")
+  ylab("Type of Surgery") +
+  xlab("Frequency")
 ```
----explanation---
 
+ In this frequency graph it is possible to clearly see how CRM and RVAO are the most common types of surgery.
+ 
 ## Complications
 
 ```{r, include = FALSE, result = 'asis'}
@@ -185,8 +195,8 @@ porcCompCrm <- paste(round((as.numeric(A[1,1]/161)*100)), "%", sep="")
 ### Angioplasty
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 RegionLabels<-c(porcentageNoCompAng,porcentageCompAng)
-pie(tablaAtc, RegionLabels, col = rainbow(length(table(tablaAtc))),main = "Complications in angioplasty patients")
-legendLabels = c("No Complications","Complications")
+pie(tablaAtc, RegionLabels, col = rainbow(length(table(tablaAtc))),main = "Complicaciones en pacientes de Angioplastia")
+legendLabels = c("Sin Complicaciones","Complicaciones")
 legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaAtc))))
 ```
 ---explanation---
@@ -199,6 +209,11 @@ legendLabels = c("Complicationss","No Complications")
 legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaCRM))))
 ```
 ---explanation and comparison between graphs----
+
+
+# Interpretation 
+In this section we look for information from relations and comparisons between variables.
+
 
 ## Number of injuries according to ACC (complex coronary anatomy)
 ```{r, include = FALSE, result = 'asis'}
@@ -235,8 +250,9 @@ colnames(procedACC_data)[2]<-"No ACC"
 
 ```
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-barplot(t(as.matrix(procedACC_data)),beside=TRUE,main="Injuries according to ACC",xlab="Injuries", ylab="Frequency", col=c("red", "lightblue"),
-        legend.text = colnames(procedACC_data),args.legend=list(cex=0.75,x = "top"))
+barplot(t(as.matrix(procedACC_data)),beside=TRUE,main="Injuries according to ACC",xlab="Injuries", ylab="Frequency", col=c("#cd5c5c", "#6495ed"),
+        legend.text = colnames(procedACC_data),args.legend=list(cex=0.75,x = "topright"),alpha = 0.6)
+  
 ```
 ---explanation---
 
@@ -253,20 +269,22 @@ unVaso<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronari
 dosVasos<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "2 vasos"),]
 tresVasos<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "3 vasos"),]
 
-coronopatia<- c(c("One vessel", "One vessel"),c("Two vessels", "Two vessels"), c("Three vessels", "Three vessels"))
+coronopatia<- c(c("1 vessel", "1 vessel"), c("2 vessels", "2 vessels"),c("3 vessels", "3 vessels"))
 procedimiento<- c("Surgery", "Angioplasty","Surgery", "Angioplasty","Surgery", "Angioplasty")
-valores<- c(nrow(unVaso[which(unVaso$PROCEDIMIENTO == "CIRUGIA"),]),nrow(unVaso[which(unVaso$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]))
-dataVasosProced <- data.frame(procedimiento,coronopatia,valores)
-```
-```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-ggplot(dataVasosProced, aes(fill=procedimiento, y=valores ,x=procedimiento)) + 
+values<- c(nrow(unVaso[which(unVaso$PROCEDIMIENTO == "CIRUGIA"),]),nrow(unVaso[which(unVaso$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]))
+dataVasosProced <- data.frame(procedimiento,coronopatia,values)
+grafico1<-ggplot(dataVasosProced, aes(fill=procedimiento, y=values ,x=procedimiento)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_viridis(discrete = T, option = "E") +
   ggtitle("Procedure according affected vessels") +
   facet_wrap(~coronopatia,nrow = 1) +
   theme_ipsum() +
   theme(legend.position="none") +
+  scale_fill_manual(values = c("#6495ED","#5f9ea0"))+
   xlab("")
+```
+```{r fig.width=8, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE,cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE}
+grafico1
 ```
 ---explanation----
 
@@ -316,10 +334,13 @@ colnames(procedRisksData)[2]<-"Angioplasty"
 
 procedRisksData
 ```
-```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-barplot(t(as.matrix(procedRisksData)),beside=TRUE,main="Procedure Frequency by Risk Factor",xlab="Risk Factors", ylab="Frequency", col=c("lightblue", "red"),
-        legend.text = colnames(procedRisksData),args.legend=list(cex=0.75,x = "top"))
+```{r fig.width=7, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
+barplot(t(as.matrix(procedRisksData)),beside=TRUE,main="Procedure Frequency by Risk Factor",xlab="Risk Factors", ylab="Frequency", col=c("#cd5c5c", "#6495ed"),
+        legend.text = colnames(procedRisksData),args.legend=list(cex=0.75,x = "topright"))
 ```
 ----Explanation----
+
+# Predictor 
+
 
 ## {.unnumbered}

@@ -221,7 +221,7 @@ pieSurgery<-pie(tablaCRM, RegionLabels, col = colores2)
 legendLabels = c("Complications","No Complications")
 legend("topright", legendLabels, cex = 0.8, fill = colores2)
 ```
-In contrast to angioplasty, an important percentage of surgery patients suffer complications (in the long and short term).
+In contrast to angioplasty, a significant percentage of surgery patients suffer complications.
 
 
 # Interpretation 

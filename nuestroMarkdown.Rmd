@@ -13,6 +13,11 @@ The dataset used in this assignment was given by Austral University Hospital's c
 This document is organized into three sections: Data Analysis, which shows generalized queries on the dataset; Interpretation, which seeks to give further understanding of the given dataset in its context, and Predictor, where the engineering behind the model is explained.
 
 To analyze the dataset in the correct way and extract the richest information we started with researching the variables meaning, medical terms included, and cardiological procedures from different information sources. We then proceeded with the implementation of data analysis tools and strategies to fulfill our objectives.
+
+## Members 
+
+#### Catalini, Coulougian, Demitropulos, Encina, Lopez Bonaguro.
+
  
 
 # Data Analysis
@@ -70,7 +75,7 @@ pyramid
 
 This pyramid graph allows to observe the sex distribution by age. There is a much higher percentage of men in the dataset, which are mainly concentrated between 60 and 70 years old.
 
-## Reason for admission
+## Reason for Admission
 
 ```{r, include = FALSE, results='asis'}
 displayIngresoSegunEdad<- table(dataset$MOTIVO.DE.INGRESO,dataset$EDAD)
@@ -134,8 +139,6 @@ tiposDeCirugias<- factor(subdatasetCirugia$TIPO.DE.CIRUGIA)
 tablaTiposDeCirugias <- table(tiposDeCirugias)
 tablaTiposDeCirugias
 
-
-
 subdatasetCirugia$TIPO.DE.CIRUGIA[subdatasetCirugia$TIPO.DE.CIRUGIA == "RVM"] <- "Myocardical Revascularization"
 subdatasetCirugia$TIPO.DE.CIRUGIA[subdatasetCirugia$TIPO.DE.CIRUGIA == "CRM PURA"] <- "PURE CRM"
 subdatasetCirugia$TIPO.DE.CIRUGIA[subdatasetCirugia$TIPO.DE.CIRUGIA == "REEMPLAZO VALVULAR PULMONAR"] <- "Pulmonary Valve Replacement"
@@ -143,13 +146,6 @@ subdatasetCirugia$TIPO.DE.CIRUGIA[subdatasetCirugia$TIPO.DE.CIRUGIA == "OTRA"] <
 subdatasetCirugia$TIPO.DE.CIRUGIA[subdatasetCirugia$TIPO.DE.CIRUGIA == "ANEURISMA AORTICO"] <- "Aortic Aneurysm"
 subdatasetCirugia$TIPO.DE.CIRUGIA[subdatasetCirugia$TIPO.DE.CIRUGIA == "CIA"] <- "Interatrial Communication"
 subdatasetCirugia$TIPO.DE.CIRUGIA[subdatasetCirugia$TIPO.DE.CIRUGIA == "PLASTICA MITRAL"] <- "Mitral Valve Repair"
-
-
-
-
-
-
-
 
 tiposDeCirugias
 
@@ -209,19 +205,21 @@ porcCompCrm <- paste(round((as.numeric(A[1,1]/161)*100)), "%", sep="")
 ```
 ### Angioplasty
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
+colores <- c("#6495ED", "#CD5C5C")
 RegionLabels<-c(porcentageNoCompAng,porcentageCompAng)
-pie(tablaAtc, RegionLabels, col = rainbow(length(table(tablaAtc))),main = "Complicaciones en pacientes de Angioplastia")
-legendLabels = c("Sin Complicaciones","Complicaciones")
-legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaAtc))))
+pieATC <-pie(tablaAtc, RegionLabels, col = colores,)
+legendLabels = c("No Complications","Complications")
+legend("topright", legendLabels, cex = 0.8, fill = colores)
 ```
 This pie graph shows how angioplasty is not a procedure that results in numerous complications.
 
 ### Surgery
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
+colores2 <- c("#CD5C5C", "#6495ED")
 RegionLabels<-c(porcCompCrm,porcNoCompCrm)
-pie(tablaCRM, RegionLabels, col = rainbow(length(table(tablaCRM))),main = "Complications in surgery patients")
-legendLabels = c("Complicationss","No Complications")
-legend("topright", legendLabels, cex = 0.8, fill = rainbow(length(table(tablaCRM))))
+pieSurgery<-pie(tablaCRM, RegionLabels, col = colores2)
+legendLabels = c("Complications","No Complications")
+legend("topright", legendLabels, cex = 0.8, fill = colores2)
 ```
 In contrast to angioplasty, an important percentage of surgery patients suffer complications (in the long and short term).
 
@@ -271,7 +269,7 @@ barplot(t(as.matrix(procedACC_data)),beside=TRUE,xlab="Injuries", ylab="Frequenc
 ```
 In this graph it is possible to appreciate how most of the ACC patients are located in the zone between 3 and 5 injuries, while the rest of the patients are mainly located in the zone between 0 and 2 injuries.
 
-## Procedure according affected vessels
+## Procedure according to affected vessels
 
 ```{r, include = FALSE, result = 'asis'}
 subdatasetVasosAfectados = dataset[which(dataset$Resumen.Coronariopatia !="#N/A" & dataset$Resumen.Coronariopatia !="TCI solo"),]
@@ -300,37 +298,10 @@ grafico1<-ggplot(dataVasosProced, aes(fill=procedimiento, y=values ,x=procedimie
 ```{r fig.width=8, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE,cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE}
 grafico1
 ```
-This graph allows to visualize how most of the patients with 1 and 2 affected vessels end up in angioplasty, while 3 vessels patients are almost equally distributed between angioplasty and surgery.
-
-## Relation between TAD, TAS (Arterial Tension) and clamping time
-```{r, include = FALSE, result = 'asis'}
-subdatasetNoAngioplastia = dataset[which(dataset$PROCEDIMIENTO != "ANGIOPLASTIA"),]
-subdatasetTiempoClampeo = subdatasetNoAngioplastia[which(subdatasetNoAngioplastia$TIEMPO.DE.CLAMPEO != "#N/A"),]
-subdatasetTiempoClampeoTAD = subdatasetTiempoClampeo[which(subdatasetTiempoClampeo$TAD.INGRESO.RCV != "#N/A"),]
-subdatasetTiempoClampeoTAS = subdatasetTiempoClampeo[which(subdatasetTiempoClampeo$TAS.INGRESO.RCV != "#N/A"),]
+This graph visually represents how most of the patients with 1 and 2 affected vessels end up in angioplasty, while 3 vessels patients are almost equally distributed between angioplasty and surgery.
 
 
-tiempoDeClampeoTad = subdatasetTiempoClampeoTAD$TIEMPO.DE.CLAMPEO
-tiempoDeClampeoTas = subdatasetTiempoClampeoTAS$TIEMPO.DE.CLAMPEO
-tad = subdatasetTiempoClampeoTAD$TAD.INGRESO.RCV[which(subdatasetTiempoClampeoTAD$TAD.INGRESO.RCV != "#N/A")]
-tas = subdatasetTiempoClampeoTAS$TAS.INGRESO.RCV[which(subdatasetTiempoClampeoTAS$TAS.INGRESO.RCV != "#N/A")]
-```
-### TAD and clamping time
 
-```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-plot(tad,tiempoDeClampeoTad)
-modeltad = lm(tiempoDeClampeoTad~tad)
-abline(modeltad)
-```
-
-### TAS and clamping time
-
-```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-plot(tas,tiempoDeClampeoTas)
-modeltas = lm(tiempoDeClampeoTas~tas)
-abline(modeltas)
-```
-evaluar si sacar estos graficos o cambiarlos para poner algo que aporte mas info. Esto esta mal :)
 
 ## Procedure Frequency by Risk Factor
 

@@ -15,10 +15,14 @@ This document is organized into three sections: Data Analysis, which shows gener
 To analyze the dataset in the correct way and extract the richest information we started with researching the variables meaning, medical terms included, and cardiological procedures from different information sources. We then proceeded with the implementation of data analysis tools and strategies to fulfill our objectives.
 
 #  Data Analysis 
-<font size="2">In this section we evaluate different variables in the dataset and show graphs.
-</font>
+In this section we evaluate different variables in the dataset and show graphs.
+
 <p>&nbsp;</p>
 <font size="5"> **Sex and Age** </font>
+
+As an initial dataset analysis, a Sex and Age query was made. It is a basic analysis to be done in order to understand the distribution in our patients sample.
+
+
 ```{r, include = FALSE, results='asis'}
 library(plotrix)
 library(plotly)
@@ -33,6 +37,7 @@ library(plyr)
 library(ggplot2)
 library(viridis)
 library(rmdformats)
+library(tufte)
 
 dataset <- read.csv("dataset.csv", sep=";")
 x <- cut2(dataset$EDAD, seq(10,90,5))
@@ -68,7 +73,25 @@ pyramid <- ggplot(counts, aes(x = counts$ageInterval, y = counts$Freq, fill = co
 pyramid
 ```
 
-<font size="2">This pyramid graph allows to observe the sex distribution by age. There is a much higher percentage of men in the dataset, which are mainly concentrated between 60 and 70 years old.</font>
+This pyramid graph allows to observe the sex distribution by age. There is a much higher percentage of men in the dataset, which are mainly concentrated between 60 and 70 years old.
+
+Due to the fact that most patients in the dataset are part of the interval of older age, research was done in order to understand the influence of age in cardiological events and treatments.
+
+According to  Dr. Ann Bowling [1]:
+
+
+> "The rates of use of potentially life saving and life enhancing investigations and interventions decline as patients get older.
+[...]
+The ageing of the population is one of the major challenges facing health services."
+>
+> `r tufte::quote_footer('Dr. Ann Bowling')`
+
+
+From this study, it is possible to conclude that age has a significant influence in events and treatments. Because of this, further analysis will be done contemplating age as a major factor.
+
+
+
+
 <p>&nbsp;</p>
 <font size="5.5"> **Reason for Admission** </font>
 
@@ -106,9 +129,9 @@ plot
 plot
 ```
 
-<font size="2">The aim of this graph is to show the main causes of admission in the Hospital, according to the age of the patients. It is possible to see that Coronary Programmed Operations stands out as the most common reason.</font>
+The aim of this graph is to show the main causes of admission in the Hospital, according to the age of the patients. It is possible to see that Coronary Programmed Operations stands out as the most common reason.
 <p>&nbsp;</p>
-<font size="5.5"> **Procedures** </font>
+<font size="5.5"> **Procedures according to Age** </font>
 
 ```{r, include = FALSE, results='asis'}
 datasetSinNA = dataset[which(dataset$PROCEDIMIENTO != "CIRUGIA, ENDOVALVULA"),]
@@ -124,9 +147,11 @@ distributionPlot<-datasetSinNA %>%
 distributionPlot
 ```
 
-<font size="2">This graph shows how procedures are distributed according to the age of the patient. Mitral Valve Replacement far outweighs as the most recurrent procedure in the oldest ages.</font>
+This graph shows how procedures are distributed according to the age of the patient. Mitral Valve Replacement far outweighs as the most recurrent procedure in the oldest ages.
 <p>&nbsp;</p>
 <font size="5.5"> **Types of Surgery** </font>
+
+As seen on the previous analysis, it is possible to see that a large proportion of patients end up in Surgery. Because of this, a query was made in order to understand the distribution of surgery types.
 
 ```{r, include = FALSE, results='asis'}
 subdatasetCirugia <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA" & (dataset$TIPO.DE.CIRUGIA != "#N/A" & dataset$TIPO.DE.CIRUGIA != "TUMORES DE AURICULA" & dataset$TIPO.DE.CIRUGIA != "TROMBECTOMIA PULMONAR" & dataset$TIPO.DE.CIRUGIA != "PLASTICA TRICUS, OTRA" & dataset$TIPO.DE.CIRUGIA != "PERICARDIECTOMIA" & dataset$TIPO.DE.CIRUGIA != "DOBLE REEMPLAZO VALVULAR")),]
@@ -163,9 +188,11 @@ subdatasetCirugia %>%
   xlab("Frequency")
 ```
 
-<font size="2">In this frequency graph it is clearly seen how CRM and RVAO are the most common types of surgery.</font>
+In this frequency graph it is clearly seen how CRM and RVAO are the most common types of surgery.
 <p>&nbsp;</p> 
 <font size="5.5"> **Complications** </font>
+
+In the dataset, information was given according to two categories: surgery (in general) and angioplasty. Starting from this, the sample proportion of complications was calculated according to the different procedures.
 
 ```{r, include = FALSE, result = 'asis'}
 pacientesATC <- dataset[which(dataset$PROCEDIMIENTO == "ANGIOPLASTIA"),]
@@ -206,7 +233,7 @@ pieATC <-pie(tablaAtc, RegionLabels, col = colores,)
 legendLabels = c("No Complications","Complications")
 legend("topright", legendLabels, cex = 0.8, fill = colores)
 ```
-<font size="2">This pie graph shows, based on the analyzed data, how angioplasty appears not being a procedure that results in numerous complications.</font>
+This pie graph shows, based on the analyzed data, how angioplasty appears not being a procedure that results in numerous complications.
 
 ### *Surgery*
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
@@ -216,13 +243,16 @@ pieSurgery<-pie(tablaCRM, RegionLabels, col = colores2)
 legendLabels = c("Complications","No Complications")
 legend("topright", legendLabels, cex = 0.8, fill = colores2)
 ```
-<font size="2">In contrast to angioplasty, a significant percentage of surgery patients in the dataset suffer complications.</font>
+In contrast to angioplasty, a significant percentage of surgery patients in the dataset suffer complications.
 
 # Interpretation 
-<font size="2">In this section we look for information from relations and comparisons between variables.</font>
+In this section we look for information from relations and comparisons between variables.
 <p>&nbsp;</p>
 
-<font size="5.5"> **Number of injuries according to ACC (Complex Coronary Anatomy)** </font>
+<font size="5.5"> **Number of injuries according to CCA (Complex Coronary Anatomy)** </font>
+
+According to a study by Dr. Hu and Dr. Iftikhar from UC Riverside, U.S.A. [2], patients with CCA present a challenge when procedures are performed. An analysis was made in order to assert this information in the sample.
+
 ```{r, include = FALSE, result = 'asis'}
 subsetNoACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 0 & 
                                dataset$NUMERO.DE.LESIONES != "#N/A"),]
@@ -261,43 +291,18 @@ barplot(t(as.matrix(procedACC_data)),beside=TRUE,xlab="Injuries", ylab="Frequenc
         legend.text = colnames(procedACC_data),args.legend=list(cex=0.75,x = "topright"),alpha = 0.6)
   
 ```
-<font size="2">In this graph it is possible to appreciate how most of the ACC patients are located in the zone between 3 and 5 injuries, while the rest of the patients are mainly located in the zone between 0 and 2 injuries.</font>
+In this graph it is possible to appreciate how most of the CCA patients are located in the zone between 3 and 5 injuries, while the rest of the patients are mainly located in the zone between 0 and 2 injuries.
 <p>&nbsp;</p>
-<font size="5.5"> **Procedure according to affected vessels** </font>
+<font size="5.5"> **Procedure Distrubution** </font>
+<br></br>
 
-```{r, include = FALSE, result = 'asis'}
-subdatasetVasosAfectados = dataset[which(dataset$Resumen.Coronariopatia !="#N/A" & dataset$Resumen.Coronariopatia !="TCI solo"),]
-displayVasosProced <- table(subdatasetVasosAfectados$PROCEDIMIENTO,subdatasetVasosAfectados$Resumen.Coronariopatia)
-displayVasosProced
-
-subdatasetVasosAfectados
-vasosCirugiaAngioplastia <- subdatasetVasosAfectados[which(subdatasetVasosAfectados$PROCEDIMIENTO == "CIRUGIA" | subdatasetVasosAfectados$PROCEDIMIENTO == "ANGIOPLASTIA"),]
-unVaso<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "1 vaso"),]
-dosVasos<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "2 vasos"),]
-tresVasos<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "3 vasos"),]
-
-coronopatia<- c(c("1 vessel", "1 vessel"), c("2 vessels", "2 vessels"),c("3 vessels", "3 vessels"))
-procedimiento<- c("Surgery", "Angioplasty","Surgery", "Angioplasty","Surgery", "Angioplasty")
-values<- c(nrow(unVaso[which(unVaso$PROCEDIMIENTO == "CIRUGIA"),]),nrow(unVaso[which(unVaso$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]))
-dataVasosProced <- data.frame(procedimiento,coronopatia,values)
-grafico1<-ggplot(dataVasosProced, aes(fill=procedimiento, y=values ,x=procedimiento)) + 
-  geom_bar(position="dodge", stat="identity") +
-  scale_fill_viridis(discrete = T, option = "E") +
-  facet_wrap(~coronopatia,nrow = 1) +
-  theme_ipsum() +
-  theme(legend.position="none") +
-  scale_fill_manual(values = c("#499c8c","#87CEEB"))+
-  xlab("")
-```
-```{r fig.width=8, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE,cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE}
-grafico1
-```
-<font size="2">This graph visually represents how most of the patients with 1 and 2 affected vessels end up in angioplasty, while 3 vessels patients are almost equally distributed between angioplasty and surgery.</font>
-<p>&nbsp;</p>
+An important analysis to do was the distribution of the procedures carried out according to some factors related to the patients. Factors evaluated as influential include pre-existing  medical conditions, such as diabetes, obesity and age, among others. 
 
 
 
-<font size="5.5"> **Procedure Frequency by Risk Factor** </font>
+
+
+<font size="4.8"> **Procedure Frequency by Risk Factor** </font>
 
 ```{r, include= FALSE,results='asis'}
 riskCirugia <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA"),] 
@@ -317,8 +322,41 @@ procedRisksData
 barplot(t(as.matrix(procedRisksData)),beside=TRUE,xlab="Risk Factors", ylab="Frequency", col=c("#499c8c","#87CEEB"),
         legend.text = colnames(procedRisksData),args.legend=list(cex=0.75,x = "topright"))
 ```
-<font size="2">The aim of this graph is to show the frequency of procedures according to the main risk factors in the dataset. It can easily be seen how diabetic patients  and the ones above 65 years old end up in some kind of procedure, mainly angioplasty.</font">
+The aim of this graph is to show the frequency of procedures according to the main risk factors in the dataset. It can easily be seen how diabetic patients  and the ones above 65 years old end up in some kind of procedure, mainly angioplasty.
 
+
+<font size="4.8"> **Procedure according to affected vessels** </font>
+
+Furthermore, an analysis of the influence of a non pre-existing factor was also made, which are affected vessels when the patient needs to be treated.
+```{r, include = FALSE, result = 'asis'}
+subdatasetVasosAfectados = dataset[which(dataset$Resumen.Coronariopatia !="#N/A" & dataset$Resumen.Coronariopatia !="TCI solo"),]
+displayVasosProced <- table(subdatasetVasosAfectados$PROCEDIMIENTO,subdatasetVasosAfectados$Resumen.Coronariopatia)
+displayVasosProced
+
+subdatasetVasosAfectados
+vasosCirugiaAngioplastia <- subdatasetVasosAfectados[which(subdatasetVasosAfectados$PROCEDIMIENTO == "CIRUGIA" | subdatasetVasosAfectados$PROCEDIMIENTO == "ANGIOPLASTIA"),]
+unVaso<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "1 vaso"),]
+dosVasos<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "2 vasos"),]
+tresVasos<-vasosCirugiaAngioplastia[which(vasosCirugiaAngioplastia$Resumen.Coronariopatia == "3 vasos"),]
+
+coronopatia<- c(c("1 vessel", "1 vessel"), c("2 vessels", "2 vessels"),c("3 vessels", "3 vessels"))
+procedimiento<- c("Surgery", "Angioplasty","Surgery", "Angioplasty","Surgery", "Angioplasty")
+values<- c(nrow(unVaso[which(unVaso$PROCEDIMIENTO == "CIRUGIA"),]),nrow(unVaso[which(unVaso$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(dosVasos[which(dosVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "CIRUGIA"),]),nrow(tresVasos[which(tresVasos$PROCEDIMIENTO == "ANGIOPLASTIA"),]))
+dataVasosProced <- data.frame(procedimiento,coronopatia,values)
+grafico1<-ggplot(dataVasosProced, aes(fill=procedimiento, y=values ,x=procedimiento),) + 
+  geom_bar(position="dodge", stat="identity", color="black") +
+  scale_fill_viridis(discrete = T, option = "E") +
+  facet_wrap(~coronopatia,nrow = 1) +
+  theme_ipsum() +
+  theme(legend.position="none") +
+  scale_fill_manual(values = c("#499c8c","#87CEEB"))+
+  xlab("")
+```
+```{r fig.width=8, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE,cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE}
+grafico1
+```
+This graph visually represents how most of the patients with 1 and 2 affected vessels end up in angioplasty, while 3 vessels patients are almost equally distributed between angioplasty and surgery.
+<p>&nbsp;</p>
 # Predictor 
 
 <font size="5.5"> **Team Members** </font>
@@ -330,3 +368,9 @@ barplot(t(as.matrix(procedRisksData)),beside=TRUE,xlab="Risk Factors", ylab="Fre
 #### [Alejo Demitropulos](mailto:alejo.demitropulos@ing.austral.edu.ar)
 
 ## {.unnumbered}
+
+# Bibliography
+
+1. Bowling A. (1999). Ageism in cardiology. BMJ (Clinical research ed.), 319(7221), 1353–1355. https://doi.org/10.1136/bmj.319.7221.1353 - Retrieved on June 17th, 2021.
+
+2. Iftikhar, S. and Hu, P., 2020. Complex Coronary Artery Lesions. [online] Available at: https://www.ncbi.nlm.nih.gov/books/NBK539899/#article-19791.s14 Retrieved on June 17th, 2021.

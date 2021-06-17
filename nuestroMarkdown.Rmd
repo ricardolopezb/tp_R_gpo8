@@ -3,6 +3,7 @@ title: "Study of Cardiological Patients: Preconditions and Procedures"
 author: "Group 8"
 date: "`r Sys.Date()`"
 output: rmdformats::material
+fontsize: 9pt
 ---
 # Introduction
 
@@ -14,16 +15,11 @@ This document is organized into three sections: Data Analysis, which shows gener
 
 To analyze the dataset in the correct way and extract the richest information we started with researching the variables meaning, medical terms included, and cardiological procedures from different information sources. We then proceeded with the implementation of data analysis tools and strategies to fulfill our objectives.
 
-## Members 
-
-#### Catalini, Coulougian, Demitropulos, Encina, Lopez Bonaguro.
-
- 
-
-# Data Analysis
-In this section we evaluate different variables in the dataset and show graphs.
-
-## Sex and Age 
+#  Data Analysis 
+<font size="2">In this section we evaluate different variables in the dataset and show graphs.
+</font>
+<p>&nbsp;</p>
+<font size="5"> **Sex and Age** </font>
 ```{r, include = FALSE, results='asis'}
 library(plotrix)
 library(plotly)
@@ -73,9 +69,9 @@ pyramid <- ggplot(counts, aes(x = counts$ageInterval, y = counts$Freq, fill = co
 pyramid
 ```
 
-This pyramid graph allows to observe the sex distribution by age. There is a much higher percentage of men in the dataset, which are mainly concentrated between 60 and 70 years old.
-
-## Reason for Admission
+<font size="2">This pyramid graph allows to observe the sex distribution by age. There is a much higher percentage of men in the dataset, which are mainly concentrated between 60 and 70 years old.</font>
+<p>&nbsp;</p>
+<font size="5.5"> **Reason for Admission** </font>
 
 ```{r, include = FALSE, results='asis'}
 displayIngresoSegunEdad<- table(dataset$MOTIVO.DE.INGRESO,dataset$EDAD)
@@ -111,9 +107,9 @@ plot
 plot
 ```
 
-The aim of this graph is to show the main causes of admission in the Hospital, according to the age of the patients. It is possible to see that Coronary Programmed Operations stands out as the most common reason.
-
-## Procedures
+<font size="2">The aim of this graph is to show the main causes of admission in the Hospital, according to the age of the patients. It is possible to see that Coronary Programmed Operations stands out as the most common reason.</font>
+<p>&nbsp;</p>
+<font size="5.5"> **Procedures** </font>
 
 ```{r, include = FALSE, results='asis'}
 datasetSinNA = dataset[which(dataset$PROCEDIMIENTO != "CIRUGIA, ENDOVALVULA"),]
@@ -129,9 +125,9 @@ distributionPlot<-datasetSinNA %>%
 distributionPlot
 ```
 
-This graph shows how procedures are distributed according to the age of the patient. Mitral Valve Replacement far outweighs as the most recurrent procedure in the oldest ages.
-
-## Types of Surgery
+<font size="2">This graph shows how procedures are distributed according to the age of the patient. Mitral Valve Replacement far outweighs as the most recurrent procedure in the oldest ages.</font>
+<p>&nbsp;</p>
+<font size="5.5"> **Types of Surgery** </font>
 
 ```{r, include = FALSE, results='asis'}
 subdatasetCirugia <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA" & (dataset$TIPO.DE.CIRUGIA != "#N/A" & dataset$TIPO.DE.CIRUGIA != "TUMORES DE AURICULA" & dataset$TIPO.DE.CIRUGIA != "TROMBECTOMIA PULMONAR" & dataset$TIPO.DE.CIRUGIA != "PLASTICA TRICUS, OTRA" & dataset$TIPO.DE.CIRUGIA != "PERICARDIECTOMIA" & dataset$TIPO.DE.CIRUGIA != "DOBLE REEMPLAZO VALVULAR")),]
@@ -168,9 +164,9 @@ subdatasetCirugia %>%
   xlab("Frequency")
 ```
 
-In this frequency graph it is clearly seen how CRM and RVAO are the most common types of surgery.
- 
-## Complications
+<font size="2">In this frequency graph it is clearly seen how CRM and RVAO are the most common types of surgery.</font>
+<p>&nbsp;</p> 
+<font size="5.5"> **Complications** </font>
 
 ```{r, include = FALSE, result = 'asis'}
 pacientesATC <- dataset[which(dataset$PROCEDIMIENTO == "ANGIOPLASTIA"),]
@@ -203,7 +199,7 @@ A <- matrix(nrow=1,ncol=2, c(cantidadTotal,sinComplicaciones), byrow=TRUE)
 porcNoCompCrm <- paste(round((as.numeric(A[1,2]/161)*100)), "%", sep="")
 porcCompCrm <- paste(round((as.numeric(A[1,1]/161)*100)), "%", sep="")
 ```
-### Angioplasty
+### *Angioplasty*
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 colores <- c("#6495ED", "#CD5C5C")
 RegionLabels<-c(porcentageNoCompAng,porcentageCompAng)
@@ -211,9 +207,8 @@ pieATC <-pie(tablaAtc, RegionLabels, col = colores,)
 legendLabels = c("No Complications","Complications")
 legend("topright", legendLabels, cex = 0.8, fill = colores)
 ```
-This pie graph shows how angioplasty is not a procedure that results in numerous complications.
-
-### Surgery
+<font size="2">This pie graph shows how angioplasty is not a procedure that results in numerous complications.</font>
+### *Surgery*
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 colores2 <- c("#CD5C5C", "#6495ED")
 RegionLabels<-c(porcCompCrm,porcNoCompCrm)
@@ -221,14 +216,13 @@ pieSurgery<-pie(tablaCRM, RegionLabels, col = colores2)
 legendLabels = c("Complications","No Complications")
 legend("topright", legendLabels, cex = 0.8, fill = colores2)
 ```
-In contrast to angioplasty, a significant percentage of surgery patients suffer complications.
-
+<font size="2">In contrast to angioplasty, a significant percentage of surgery patients suffer complications.</font>
 
 # Interpretation 
-In this section we look for information from relations and comparisons between variables.
+<font size="2">In this section we look for information from relations and comparisons between variables.</font>
+<p>&nbsp;</p>
 
-
-## Number of injuries according to ACC (Complex Coronary Anatomy)
+<font size="5.5"> **Number of injuries according to ACC (Complex Coronary Anatomy)** </font>
 ```{r, include = FALSE, result = 'asis'}
 subsetNoACC <- dataset[which(dataset$ANATOMIA.CORONARIA.COMPLEJA == 0 & 
                                dataset$NUMERO.DE.LESIONES != "#N/A"),]
@@ -267,9 +261,9 @@ barplot(t(as.matrix(procedACC_data)),beside=TRUE,xlab="Injuries", ylab="Frequenc
         legend.text = colnames(procedACC_data),args.legend=list(cex=0.75,x = "topright"),alpha = 0.6)
   
 ```
-In this graph it is possible to appreciate how most of the ACC patients are located in the zone between 3 and 5 injuries, while the rest of the patients are mainly located in the zone between 0 and 2 injuries.
-
-## Procedure according to affected vessels
+<font size="2">In this graph it is possible to appreciate how most of the ACC patients are located in the zone between 3 and 5 injuries, while the rest of the patients are mainly located in the zone between 0 and 2 injuries.</font>
+<p>&nbsp;</p>
+<font size="5.5"> **Procedure according to affected vessels** </font>
 
 ```{r, include = FALSE, result = 'asis'}
 subdatasetVasosAfectados = dataset[which(dataset$Resumen.Coronariopatia !="#N/A" & dataset$Resumen.Coronariopatia !="TCI solo"),]
@@ -298,12 +292,12 @@ grafico1<-ggplot(dataVasosProced, aes(fill=procedimiento, y=values ,x=procedimie
 ```{r fig.width=8, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE,cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE}
 grafico1
 ```
-This graph visually represents how most of the patients with 1 and 2 affected vessels end up in angioplasty, while 3 vessels patients are almost equally distributed between angioplasty and surgery.
+<font size="2">This graph visually represents how most of the patients with 1 and 2 affected vessels end up in angioplasty, while 3 vessels patients are almost equally distributed between angioplasty and surgery.</font>
+<p>&nbsp;</p>
 
 
 
-
-## Procedure Frequency by Risk Factor
+<font size="5.5"> **Procedure Frequency by Risk Factor** </font>
 
 ```{r, include= FALSE,results='asis'}
 riskCirugia <- dataset[which(dataset$PROCEDIMIENTO == "CIRUGIA"),] 
@@ -323,9 +317,16 @@ procedRisksData
 barplot(t(as.matrix(procedRisksData)),beside=TRUE,xlab="Risk Factors", ylab="Frequency", col=c("#cd5c5c", "#6495ed"),
         legend.text = colnames(procedRisksData),args.legend=list(cex=0.75,x = "topright"))
 ```
-The aim of this graph is to show the frequency of procedures according to the main risk factors in the dataset. It can easily be seen how diabetic patients  and the ones above 65 years old end up in some kind of procedure, mainly angioplasty.
+<font size="2">The aim of this graph is to show the frequency of procedures according to the main risk factors in the dataset. It can easily be seen how diabetic patients  and the ones above 65 years old end up in some kind of procedure, mainly angioplasty.</font">
 
 # Predictor 
 
+<font size="5.5"> **Team Members** </font>
+
+#### [Santiago Encina](mailto:santiago.encina@ing.austral.edu.ar)
+#### [Matias Coulougian](mailto:matias.coulougian@ing.austral.edu.ar)
+#### [Ricardo Lopez Bonaguro](mailto:ricardo.lopez@ing.austral.edu.ar)
+#### [Camila Catalini](mailto:camila.catalini@ing.austral.edu.ar)
+#### [Alejo Demitropulos](mailto:alejo.demitropulos@ing.austral.edu.ar)
 
 ## {.unnumbered}

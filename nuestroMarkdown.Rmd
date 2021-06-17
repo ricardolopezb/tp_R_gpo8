@@ -3,11 +3,10 @@ title: "Study of Cardiological Patients: Preconditions and Procedures"
 author: "Group 8"
 date: "`r Sys.Date()`"
 output: rmdformats::material
-fontsize: 9pt
 ---
 # Introduction
 
-This report aims to, through medical data analysis, give an understanding of the dataset that was given to the team, and to use and train a ML model in order to predict what complications patients may present after different medical procedures as accurately as possible.
+This report aims to, through medical data analysis, give an understanding of the dataset that was given to the team, and to use and train a ML model in order to predict the procedure to be performed on patients based on their medical backround, represented in the dataset variables, as accurately as possible.
 
 The dataset used in this assignment was given by Austral University Hospital's cardiology department, located in Pilar, Buenos Aires.
 
@@ -60,7 +59,7 @@ pyramid <- ggplot(counts, aes(x = counts$ageInterval, y = counts$Freq, fill = co
   scale_y_continuous(breaks = seq(-60, 60, 10),labels = paste0(as.character(c(seq(60, 0, -10), seq(10, 60, 10))),'')) + 
   coord_flip() + 
   xlab("Age") + ylab("Number Of Patients")+
-  scale_fill_manual(name = "Sex", labels = c("Female", "Male"),values = c("#f08080","#4ea9ca"))+
+  scale_fill_manual(name = "Sex", labels = c("Female", "Male"),values = c("#87CEEB","#36a792"))+
   theme_bw()
 
 ```
@@ -117,7 +116,7 @@ distributionPlot<-datasetSinNA %>%
   ggplot(aes(x= EDAD, fill = PROCEDIMIENTO,..count..*10)) +
   geom_density(alpha = 0.5) +
   theme_ridges() +
-  scale_fill_manual(name = "Procedure:", labels = c("Surgery","Angioplasty","Mitral Valve Rep."), values = c("#10217d","#16c2d5","#3CB371"),) +
+  scale_fill_manual(name = "Procedure:", labels = c("Surgery","Angioplasty","Mitral Valve Rep."), values = c("#015d67","#16c2d5","#3CB371"),) +
   theme(legend.position = "top")+
   labs(x="Age", y = "Density")
 ```
@@ -157,7 +156,7 @@ percentage2
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
 subdatasetCirugia %>% 
   ggplot(aes(y=TIPO.DE.CIRUGIA), position=position_dodge()) + 
-  geom_bar( width = 0.85, color = "darkblue", fill = "lightblue") +
+  geom_bar( width = 0.85, color = "#36a792", fill = "#87CEEB") +
   scale_fill_brewer() +
   theme(legend.position="top")+
   ylab("Type of Surgery") +
@@ -201,22 +200,23 @@ porcCompCrm <- paste(round((as.numeric(A[1,1]/161)*100)), "%", sep="")
 ```
 ### *Angioplasty*
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-colores <- c("#6495ED", "#CD5C5C")
+colores <- c("#87CEEB", "#36a792")
 RegionLabels<-c(porcentageNoCompAng,porcentageCompAng)
 pieATC <-pie(tablaAtc, RegionLabels, col = colores,)
 legendLabels = c("No Complications","Complications")
 legend("topright", legendLabels, cex = 0.8, fill = colores)
 ```
-<font size="2">This pie graph shows how angioplasty is not a procedure that results in numerous complications.</font>
+<font size="2">This pie graph shows, based on the analyzed data, how angioplasty appears not being a procedure that results in numerous complications.</font>
+
 ### *Surgery*
 ```{r fig.width=6, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE}
-colores2 <- c("#CD5C5C", "#6495ED")
+colores2 <- c("#36a792", "#87CEEB")
 RegionLabels<-c(porcCompCrm,porcNoCompCrm)
 pieSurgery<-pie(tablaCRM, RegionLabels, col = colores2)
 legendLabels = c("Complications","No Complications")
 legend("topright", legendLabels, cex = 0.8, fill = colores2)
 ```
-<font size="2">In contrast to angioplasty, a significant percentage of surgery patients suffer complications.</font>
+<font size="2">In contrast to angioplasty, a significant percentage of surgery patients in the dataset suffer complications.</font>
 
 # Interpretation 
 <font size="2">In this section we look for information from relations and comparisons between variables.</font>
@@ -257,7 +257,7 @@ colnames(procedACC_data)[2]<-"No ACC"
 
 ```
 ```{r fig.width=9, fig.height=5, fig.align='center',echo=FALSE,warning=FALSE}
-barplot(t(as.matrix(procedACC_data)),beside=TRUE,xlab="Injuries", ylab="Frequency", col=c("#cd5c5c", "#6495ed"),
+barplot(t(as.matrix(procedACC_data)),beside=TRUE,xlab="Injuries", ylab="Frequency", col=c("#066150", "#87CEEB"),
         legend.text = colnames(procedACC_data),args.legend=list(cex=0.75,x = "topright"),alpha = 0.6)
   
 ```
@@ -286,7 +286,7 @@ grafico1<-ggplot(dataVasosProced, aes(fill=procedimiento, y=values ,x=procedimie
   facet_wrap(~coronopatia,nrow = 1) +
   theme_ipsum() +
   theme(legend.position="none") +
-  scale_fill_manual(values = c("#6495ED","#5f9ea0"))+
+  scale_fill_manual(values = c("#499c8c","#87CEEB"))+
   xlab("")
 ```
 ```{r fig.width=8, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE,cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE}
@@ -314,7 +314,7 @@ colnames(procedRisksData)[2]<-"Angioplasty"
 procedRisksData
 ```
 ```{r fig.width=10, fig.height=5, fig.align='center',echo=FALSE,warning=FALSE}
-barplot(t(as.matrix(procedRisksData)),beside=TRUE,xlab="Risk Factors", ylab="Frequency", col=c("#cd5c5c", "#6495ed"),
+barplot(t(as.matrix(procedRisksData)),beside=TRUE,xlab="Risk Factors", ylab="Frequency", col=c("#499c8c","#87CEEB"),
         legend.text = colnames(procedRisksData),args.legend=list(cex=0.75,x = "topright"))
 ```
 <font size="2">The aim of this graph is to show the frequency of procedures according to the main risk factors in the dataset. It can easily be seen how diabetic patients  and the ones above 65 years old end up in some kind of procedure, mainly angioplasty.</font">

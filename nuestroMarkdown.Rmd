@@ -368,19 +368,21 @@ This graph visually represents how most of the patients with 1 and 2 affected ve
 
 <font size="5.5"> **Random Forest Model** </font>
 
-El principal proposito de este trabajo es el de lograr predecir con el mayor grado de certeza que procedimiento se llevara a cabo en un paciente, de acuerdo a su edad, si es diabetico, o segun su motivo de ingreso.
+El principal proposito de este trabajo es el de lograr predecir con el conjunto de datos dado, con el mayor grado de certeza posible, que procedimiento se llevara a cabo en un paciente, de acuerdo a las siguientes variables: su edad, si es diabetico, su motivo de ingreso y el numero de lesiones. Elegimos estas variables porque...
 
-Para hacerlo, se decidio usar el metodo RandomForest.
+Para hacerlo, se decidio usar el metodo RandomForest. Este modelo de prediccion genera...
 
-Con este modelo llegamos a la siguiente matriz de confusión:
+With this model we obtained the following confusion matrix:
 
 ![](cuadro.png)
 
-Con este modelo llegamos a predecir a donde iban dirigidos 88 de 104 pacientes teniendo una precisión del 85%. Respecto a este test, 16 pacientes que deberían ir a cirugía fueron a angioplastía. Con estos resultados, se decidio mantener este predictor por su baja cantidad de predicciones fallidas comparada a la total y su precisión.
+Con este modelo llegamos a predecir a donde iban dirigidos 94 de 104 pacientes utilizados para el testeo. Se obtuvo una precisión de aprxomimadamente un 90%. Respecto a este test, 10 pacientes que fueron a cirugía fueron predecidos para ir a angioplastía. El resultado de este modelo se obtuvo luego de probar diferentes cosas como aumentar el numero de arboles y agregar mas variables para hacer la prediccion.Se decidio mantener este predictor porque fue el de mejor accuracy que otuvimos, y tiene una baja cantidad de predicciones fallidas, las cuales se encuentran todas en predecir una angioplastia que era sirugia, lo cual segun lo investigado se trata del caso menos grave.
 
 <font size="5.5"> **AUROC Curve** </font>
 
 ```{r, include = FALSE, result = 'asis'}
+
+dataset <- read.csv("dataset.csv", sep=";")
 
 datasetCP <- dataset[which((
   dataset$MOTIVO.DE.INGRESO=="PROG CORONARIO" | 
@@ -395,7 +397,8 @@ datasetCP2 <- datasetCP[which(datasetCP$PROCEDIMIENTO != "ENDOVALVULA"),]
 datasetCP2$EDAD <- cut(datasetCP2$EDAD, breaks = c(0,55,93),labels = c("NO RISK AGE","RISK AGE"), right = FALSE)
 datasetCP2$EDAD <- as.factor(datasetCP2$EDAD)
 datasetCP2$DIABETES <- as.factor(datasetCP2$DIABETES)
-#datasetCP$NUMERO.DE.LESIONES <- as.factor(datasetCP$NUMERO.DE.LESIONES)
+datasetCP2$NUMERO.DE.LESIONES <- ifelse(datasetCP2$NUMERO.DE.LESIONES == "#N/A",0,datasetCP2$NUMERO.DE.LESIONES)
+datasetCP2$NUMERO.DE.LESIONES <- as.factor(datasetCP2$NUMERO.DE.LESIONES)
 #datasetCP$ANATOMIA.CORONARIA.COMPLEJA <- as.factor(datasetCP$ANATOMIA.CORONARIA.COMPLEJA)
 datasetCP2$PROCEDIMIENTO <- as.factor(datasetCP2$PROCEDIMIENTO)
 #datasetCP$Resumen.Coronariopatia <- as.factor(datasetCP$Resumen.Coronariopatia)
@@ -405,7 +408,7 @@ datasetCP$MOTIVO.DE.INGRESO <- as.factor(datasetCP$MOTIVO.DE.INGRESO)
 #Con este dataset queremos predecir a donde va.
 
 smp_size <- floor(0.7 * nrow(datasetCP2))
-set.seed(123)
+set.seed(100)
 train_ind <- sample(seq_len(nrow(datasetCP2)), size = smp_size)
 
 train <- droplevels(datasetCP2[train_ind, ]) #[filas,columnas]
@@ -413,7 +416,7 @@ test <- datasetCP2[-train_ind, ]
 
 #RANDOM FOREST:
 
-modelForest <- randomForest(PROCEDIMIENTO ~ EDAD + DIABETES + MOTIVO.DE.INGRESO,data = train,ntree=500)
+modelForest <- randomForest(PROCEDIMIENTO ~ EDAD + DIABETES + MOTIVO.DE.INGRESO + NUMERO.DE.LESIONES,data = train,ntree=500)
 
 modelForest
 
@@ -445,8 +448,7 @@ plotROC(predaux)
 ```
 
 
-El valor de esta curva es de 0.846. Al ser un numero cercano a 1 y con la cantidad de datos que se pasaron, esta es una buena curva que representa una buena predicción, mostrando la baja cantidad de predicciones fallidas.
-
+El valor de esta curva es de 0.861 (area bajo la curva). Cuanto mas cercano a uno es, se puede decir que mejor es el modelo. Con la cantidad de datos que se pasaron como input para el modelo y el dataset utilizado para trabajar, concluimos que es una buena curva.
 
 
 

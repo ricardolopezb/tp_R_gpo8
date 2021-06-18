@@ -38,6 +38,12 @@ library(ggplot2)
 library(viridis)
 library(rmdformats)
 library(tufte)
+library(lattice)
+library(caret)
+library(randomForest)
+library(CHAID)
+library(ROCR)
+
 
 dataset <- read.csv("dataset.csv", sep=";")
 x <- cut2(dataset$EDAD, seq(10,90,5))
@@ -358,6 +364,81 @@ grafico1
 This graph visually represents how most of the patients with 1 and 2 affected vessels end up in angioplasty, while 3 vessels patients are almost equally distributed between angioplasty and surgery.
 <p>&nbsp;</p>
 # Predictor 
+
+<font size="4.8"> **Random Forest Model** </font>
+
+El principal proposito de este trabajo es el de lograr predecir con el mayor grado de certeza que procedimiento se llevara a cabo en un paciente, de acuerdo a su edad, si es diabetico, o segun su motivo de ingreso.
+
+Para hacerlo, se decidio usar el metodo RandomForest.
+
+
+
+
+<font size="4.8"> **AUROC Curve** </font>
+```{r, include = FALSE, result = 'asis'}
+
+datasetCP <- dataset[which((
+  dataset$MOTIVO.DE.INGRESO=="PROG CORONARIO" | 
+    dataset$MOTIVO.DE.INGRESO=="PROG VALV"| 
+    dataset$MOTIVO.DE.INGRESO=="SCA no SST") & ( 
+      dataset$PROCEDIMIENTO != "CIRUGIA, ENDOVALVULA")),]
+
+datasetCP2 <- datasetCP[which(datasetCP$PROCEDIMIENTO != "ENDOVALVULA"),]
+
+#FACTOREO
+
+datasetCP2$EDAD <- cut(datasetCP2$EDAD, breaks = c(0,55,93),labels = c("NO RISK AGE","RISK AGE"), right = FALSE)
+datasetCP2$EDAD <- as.factor(datasetCP2$EDAD)
+datasetCP2$DIABETES <- as.factor(datasetCP2$DIABETES)
+#datasetCP$NUMERO.DE.LESIONES <- as.factor(datasetCP$NUMERO.DE.LESIONES)
+#datasetCP$ANATOMIA.CORONARIA.COMPLEJA <- as.factor(datasetCP$ANATOMIA.CORONARIA.COMPLEJA)
+datasetCP2$PROCEDIMIENTO <- as.factor(datasetCP2$PROCEDIMIENTO)
+#datasetCP$Resumen.Coronariopatia <- as.factor(datasetCP$Resumen.Coronariopatia)
+datasetCP$MOTIVO.DE.INGRESO <- as.factor(datasetCP$MOTIVO.DE.INGRESO)
+
+
+#Con este dataset queremos predecir a donde va.
+
+smp_size <- floor(0.7 * nrow(datasetCP2))
+set.seed(123)
+train_ind <- sample(seq_len(nrow(datasetCP2)), size = smp_size)
+
+train <- droplevels(datasetCP2[train_ind, ]) #[filas,columnas]
+test <- datasetCP2[-train_ind, ]
+
+#RANDOM FOREST:
+
+modelForest <- randomForest(PROCEDIMIENTO ~ EDAD + DIABETES + MOTIVO.DE.INGRESO,data = train,ntree=500)
+
+modelForest
+
+predF <- predict(modelForest,type = "class",test)
+
+
+table(test$PROCEDIMIENTO,predF,dnn = c("Reality", "Predict"))
+
+confusionMatrix(predF,test$PROCEDIMIENTO)
+
+plotROC <- function(predF){
+  perf<- performance(predF,"tpr","fpr")
+  plot(perf)
+  AUC<-performance(predF,"auc")@y.values[[1]]
+  grid()
+  text(.6,.2,sprintf("AUC=%0.3f", AUC))
+  abline(0,1,col="red", lty = 2)
+}
+
+predaux<-prediction(as.numeric(predF),test$PROCEDIMIENTO)
+
+perf <- performance(predaux, "auc")
+perf@y.values[[1]]
+
+
+```
+```{r fig.width=8, fig.height=6, fig.align='center',echo=FALSE,warning=FALSE,cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE}
+plotROC(predaux)
+```
+
 
 <font size="5.5"> **Team Members** </font>
 

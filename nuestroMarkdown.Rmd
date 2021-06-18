@@ -363,18 +363,23 @@ grafico1
 ```
 This graph visually represents how most of the patients with 1 and 2 affected vessels end up in angioplasty, while 3 vessels patients are almost equally distributed between angioplasty and surgery.
 <p>&nbsp;</p>
+
 # Predictor 
 
-<font size="4.8"> **Random Forest Model** </font>
+<font size="5.5"> **Random Forest Model** </font>
 
 El principal proposito de este trabajo es el de lograr predecir con el mayor grado de certeza que procedimiento se llevara a cabo en un paciente, de acuerdo a su edad, si es diabetico, o segun su motivo de ingreso.
 
 Para hacerlo, se decidio usar el metodo RandomForest.
 
+Con este modelo llegamos a la siguiente matriz de confusión:
 
+![](cuadro.png)
 
+Con este modelo llegamos a predecir a donde iban dirigidos 88 de 104 pacientes teniendo una precisión del 85%. Respecto a este test, 16 pacientes que deberían ir a cirugía fueron a angioplastía. Con estos resultados, se decidio mantener este predictor por su baja cantidad de predicciones fallidas comparada a la total y su precisión.
 
-<font size="4.8"> **AUROC Curve** </font>
+<font size="5.5"> **AUROC Curve** </font>
+
 ```{r, include = FALSE, result = 'asis'}
 
 datasetCP <- dataset[which((
@@ -440,15 +445,22 @@ plotROC(predaux)
 ```
 
 
-<font size="5.5"> **Team Members** </font>
+El valor de esta curva es de 0.846. Al ser un numero cercano a 1 y con la cantidad de datos que se pasaron, esta es una buena curva que representa una buena predicción, mostrando la baja cantidad de predicciones fallidas.
 
+
+
+
+## {.unnumbered}
+
+# Team Members
+
+#### [Camila Catalini](mailto:camila.catalini@ing.austral.edu.ar)
 #### [Santiago Encina](mailto:santiago.encina@ing.austral.edu.ar)
 #### [Matias Coulougian](mailto:matias.coulougian@ing.austral.edu.ar)
 #### [Ricardo Lopez Bonaguro](mailto:ricardo.lopez@ing.austral.edu.ar)
-#### [Camila Catalini](mailto:camila.catalini@ing.austral.edu.ar)
-#### [Alejo Demitropulos](mailto:alejo.demitropulos@ing.austral.edu.ar)
+#### [Alejo Demitropulos Macchi](mailto:alejo.demitropulos@ing.austral.edu.ar)
 
-## {.unnumbered}
+
 
 # Bibliography
 

@@ -41,7 +41,6 @@ library(tufte)
 library(lattice)
 library(caret)
 library(randomForest)
-library(CHAID)
 library(ROCR)
 
 
@@ -293,7 +292,7 @@ colnames(procedACC_data)[2]<-"No ACC"
 
 ```
 ```{r fig.width=9, fig.height=5, fig.align='center',echo=FALSE,warning=FALSE}
-barplot(t(as.matrix(procedACC_data)),beside=TRUE,xlab="Injuries", ylab="Frequency", col=c("#066150", "#87CEEB"),
+barplot(t(as.matrix(procedACC_data)),beside=TRUE,xlab="Injuries", ylab="Frequency", col=c("#499c8c", "#87CEEB"),
         legend.text = colnames(procedACC_data),args.legend=list(cex=0.75,x = "topright"),alpha = 0.6)
   
 ```
@@ -368,15 +367,14 @@ This graph visually represents how most of the patients with 1 and 2 affected ve
 
 <font size="5.5"> **Random Forest Model** </font>
 
-El principal proposito de este trabajo es el de lograr predecir con el conjunto de datos dado, con el mayor grado de certeza posible, que procedimiento se llevara a cabo en un paciente, de acuerdo a las siguientes variables: su edad, si es diabetico, su motivo de ingreso y el numero de lesiones. Elegimos estas variables porque...
-
-Para hacerlo, se decidio usar el metodo RandomForest. Este modelo de prediccion genera...
+The main purpose of this work is to predict, with the highest accuracy as possible, the procedure in which patients will be sent to, in relation to the following variables: Age, if the patient is diabetic, reason for admission and the number of injuries. These variables were chosen because, after an arduous trial and error analysis, this were the most significant in order to create the predictor. The Random Forest method was the one chosen because of its facility and effectiveness to combine variables between each other and generate a valid prediction.
 
 With this model we obtained the following confusion matrix:
 
 ![](cuadro.png)
 
-Con este modelo llegamos a predecir a donde iban dirigidos 94 de 104 pacientes utilizados para el testeo. Se obtuvo una precisión de aprxomimadamente un 90%. Respecto a este test, 10 pacientes que fueron a cirugía fueron predecidos para ir a angioplastía. El resultado de este modelo se obtuvo luego de probar diferentes cosas como aumentar el numero de arboles y agregar mas variables para hacer la prediccion.Se decidio mantener este predictor porque fue el de mejor accuracy que otuvimos, y tiene una baja cantidad de predicciones fallidas, las cuales se encuentran todas en predecir una angioplastia que era sirugia, lo cual segun lo investigado se trata del caso menos grave.
+This model accomplished to predict which procedure is going to be applied to 94 out of 104 patients, used for the testing. The accuracy of this prediction is around 90%. According to the results of this test, 10 patients, which actually went to surgery, where predicted to go to angioplasty. This is the result of the constant modification of different parameters which allowed to obtain a pretty accurate prediction, such as increasing the number of trees and adding more variables to the predictor. 
+
 
 <font size="5.5"> **AUROC Curve** </font>
 
@@ -448,7 +446,7 @@ plotROC(predaux)
 ```
 
 
-El valor de esta curva es de 0.861 (area bajo la curva). Cuanto mas cercano a uno es, se puede decir que mejor es el modelo. Con la cantidad de datos que se pasaron como input para el modelo y el dataset utilizado para trabajar, concluimos que es una buena curva.
+The value of this curve is 0.861. The accuracy of the prediction is proportional to the closeness to 1. Considering the amount of data given to the design of this model and the dataset that was used, it is possible to conclude that the curve is very accurate.
 
 
 
